@@ -316,20 +316,6 @@
       </details>
     </section>
 
-    <!-- 8. RSVP -->
-    <section class="section rsvp reveal" id="rsvp" aria-labelledby="rsvp-heading">
-      <p class="section-eyebrow en">RSVP</p>
-      <h2 class="section-title" id="rsvp-heading">참석 의사 전달</h2>
-      <p class="rsvp-message">
-        참석 의사를 미리 전해 주시면<br>
-        더욱 정성껏 자리를 준비하겠습니다.<br><br>
-        소중한 시간 내어 주시는 모든 분들께<br>
-        미리 감사의 마음을 전합니다.
-      </p>
-      <!-- placeholder: RSVP_FORM_URL 외부 폼(Tally / Google Form / FormSubmit)으로 교체 필요 -->
-      <a class="btn primary" href="#" id="rsvp-link" target="_blank" rel="noopener" data-placeholder-url>마음 전하기</a>
-    </section>
-
     <!-- 9. GUESTBOOK -->
     <section class="section guestbook reveal" id="guestbook" aria-labelledby="guestbook-heading">
       <p class="section-eyebrow en">GUEST BOOK</p>
@@ -340,8 +326,25 @@
         오래도록 마음에 담아<br>
         간직하겠습니다.
       </p>
-      <!-- placeholder: GUESTBOOK_FORM_URL 외부 폼으로 교체 필요 -->
-      <a class="btn" href="#" id="guestbook-link" target="_blank" rel="noopener" data-placeholder-url>마음 남기기</a>
+
+      <form class="guestbook-form" id="guestbook-form" novalidate>
+        <div class="guestbook-form-row">
+          <label class="sr-only" for="guestbook-name">이름</label>
+          <input class="guestbook-input" type="text" id="guestbook-name" name="name" placeholder="이름" maxlength="20" required autocomplete="off">
+          <label class="sr-only" for="guestbook-password">비밀번호</label>
+          <input class="guestbook-input guestbook-input-password" type="password" id="guestbook-password" name="password" placeholder="삭제 비밀번호" maxlength="20" required autocomplete="new-password" inputmode="numeric">
+        </div>
+        <label class="sr-only" for="guestbook-message">메시지</label>
+        <textarea class="guestbook-textarea" id="guestbook-message" name="message" placeholder="축하 메시지를 남겨주세요" maxlength="200" rows="3" required></textarea>
+        <div class="guestbook-form-footer">
+          <span class="guestbook-counter" id="guestbook-counter" aria-hidden="true">0/200</span>
+          <button class="btn primary guestbook-submit" type="submit" id="guestbook-submit">남기기</button>
+        </div>
+      </form>
+
+      <ol class="guestbook-list" id="guestbook-list" aria-live="polite">
+        <li class="guestbook-empty" id="guestbook-empty">아직 남겨진 메시지가 없어요. 첫 번째 메시지를 남겨보세요!</li>
+      </ol>
     </section>
 
     <!-- 10. SHARE -->

@@ -148,9 +148,82 @@ wedding-letter/
 | 신부/신부부/신부모 계좌 (3) | `[은행명 000-000-000-000]` |
 | 카카오 JS SDK 키 | `KAKAO_JS_KEY` 상수 |
 | 카카오톡 공유 og:url | 배포 도메인 결정 후 |
-| RSVP 외부 폼 URL | 구글 폼/네이버 폼 등 |
-| 방명록 URL (선택) | |
+| Firebase 방명록 설정 | `FIREBASE_CONFIG` 상수 (아래 "방명록(Firebase) 설정" 참고) |
 | BGM 파일 (선택) | `audio/bgm.mp3` |
+
+---
+
+## 방명록(Firebase) 설정
+
+정적 사이트(GitHub Pages)에는 서버가 없어서, 하객들이 남긴 방명록을 모두에게 실시간으로 보여주려면
+무료 클라우드 데이터베이스인 **Firebase Firestore**를 사용합니다.
+
+### 1. Firebase 프로젝트 생성
+1. https://console.firebase.google.com 접속 → Google 계정으로 로그인
+2. "프로젝트 추가" → 프로젝트 이름 입력 (예: `mhs-wedding`) → 생성
+3. 왼쪽 메뉴 [빌드] > [Firestore Database] > "데이터베이스 만들기"
+   - 위치: `asia-northeast3 (서울)` 권장
+   - 보안 규칙: 일단 "테스트 모드"로 시작 (아래 4번에서 규칙을 교체합니다)
+
+### 2. 웹 앱 등록 및 설정값 복사
+1. 프로젝트 개요 옆 톱니바퀴 > [프로젝트 설정] > 아래로 스크롤 > "웹 앱 추가" (`</>` 아이콘)
+2. 앱 닉네임 입력 (예: `wedding-invitation`) → "앱 등록"
+3. 화면에 표시되는 `firebaseConfig` 객체 값을 복사하여 [script.js](script.js) 상단의 `FIREBASE_CONFIG` 에 그대로 붙여넣습니다.
+
+```js
+const FIREBASE_CONFIG = {
+  apiKey: 'AIza...',
+  authDomain: 'mhs-wedding.firebaseapp.com',
+  projectId: 'mhs-wedding',
+  storageBucket: 'mhs-wedding.appspot.com',
+  messagingSenderId: '1234567890',
+  appId: '1:1234567890:web:abcdef',
+};
+```
+
+### 3. 컬렉션 구조
+방명록 글은 `guestbook` 컬렉션에 아래 필드로 저장됩니다 (코드에서 자동 생성, 별도 작업 불필요).
+
+| 필드 | 타입 | 설명 |
+|---|---|---|
+| `name` | string | 작성자 이름 (최대 20자) |
+| `message` | string | 축하 메시지 (최대 200자) |
+| `passwordHash` | string | 삭제 비밀번호의 SHA-256 해시값 (평문 저장 안 함) |
+| `createdAt` | timestamp | 서버 타임스탬프 |
+
+### 4. Firestore 보안 규칙 적용 (필수)
+[Firestore Database] > [규칙] 탭에서 아래 규칙으로 교체 후 "게시" 하세요.
+누구나 글쓰기/읽기는 가능하되, 필드 형식과 글자수를 검증하고 기존 글의 수정은 막습니다.
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /guestbook/{entryId} {
+      allow read: if true;
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 20
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() <= 200
+                    && request.resource.data.passwordHash is string
+                    && request.resource.data.passwordHash.size() == 64
+                    && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if true; // 삭제 비밀번호 확인은 클라이언트(script.js)에서 처리합니다.
+    }
+  }
+}
+```
+
+> ⚠️ **참고**: 삭제 비밀번호 확인은 브라우저(클라이언트)에서 해시를 비교하는 방식입니다. 이는 하객의 실수(오타 등)로부터
+> 보호하기 위한 간단한 잠금 장치이며, Firebase 콘솔에 직접 접근할 수 있는 관리자(신랑/신부)는 언제든 글을 지울 수 있습니다.
+> 완전한 서버 검증이 필요하다면 Cloud Functions를 추가로 구성해야 하며, 이 프로젝트의 정적 사이트 범위를 벗어납니다.
+
+### 5. 확인
+`FIREBASE_CONFIG`를 채운 뒤 배포하면 방명록 섹션에서 이름/메시지/삭제 비밀번호를 입력해 글을 남길 수 있고,
+목록이 실시간으로 반영됩니다. 값이 비어 있으면 "방명록 서비스 설정 중입니다" 안내만 표시됩니다.
 
 ---
 
