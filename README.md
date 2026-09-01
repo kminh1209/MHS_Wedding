@@ -2,7 +2,7 @@
 
 > Claude Code 기반 멀티 에이전트 하네스로 한국 모바일 웨딩 청첩장을 컨셉부터 QA까지 자동 제작합니다. 6명의 전문가 에이전트가 파이프라인 + 팬아웃 패턴으로 협업하여 단일 페이지 정적 HTML을 생성합니다.
 
-**Live demo**: https://revfactory.github.io/wedding-letter/ (Pages 활성화 후)
+**Live demo**: https://kminh1209.github.io/MHS_Wedding/ (Pages 활성화 후)
 
 ---
 
