@@ -9,7 +9,7 @@
   // ---------------------------------------------------------
   // PLACEHOLDERS — 실제 운영 시 아래 값을 채워주세요.
   // ---------------------------------------------------------
-  const KAKAO_JS_KEY     = ''; // placeholder: 카카오 JavaScript 키 (공유/지도 공용, https://developers.kakao.com/)
+  const KAKAO_JS_KEY     = '3a2cd201a0c4a64bdcd53e3839fe8c94';
   const RSVP_FORM_URL    = ''; // placeholder: Tally / Google Form / FormSubmit URL
   const GUESTBOOK_URL    = ''; // placeholder: 외부 방명록 폼 URL
   const SHARE_TITLE      = '강민혁 ♡ 김혜수 결혼합니다';
@@ -175,37 +175,53 @@
   // ---------------------------------------------------------
   // 5. Venue map: Kakao Maps SDK
   // ---------------------------------------------------------
-  // 카카오맵 SDK는 index.html 에서 ?appkey=YOUR_KAKAO_JS_KEY&autoload=false 로 로드됨.
-  // script.js 상단의 KAKAO_JS_KEY 에 실제 JavaScript 앱 키를 입력하면 지도가 표시됩니다.
   const VENUE_LAT = 37.2399;   // 용인 페이지웨딩 위도
   const VENUE_LNG = 127.1967;  // 용인 페이지웨딩 경도
 
-  function setupVenueMap() {
+  async function setupVenueMap() {
     const container = document.getElementById('kakao-map');
     if (!container) return;
 
-    // kakao.maps 로드 확인 (appkey가 비어 있으면 SDK가 로드되지 않음)
-    if (typeof kakao === 'undefined' || !kakao.maps) {
+    if (!KAKAO_JS_KEY) {
       container.innerHTML =
         '<p style="display:flex;align-items:center;justify-content:center;height:100%;color:#aaa;font-size:0.85rem;">카카오맵 키를 입력하면 지도가 표시됩니다.</p>';
       return;
     }
 
-    kakao.maps.load(function () {
+    try {
+      await loadScriptOnce(
+        'kakao-maps-sdk',
+        'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + encodeURIComponent(KAKAO_JS_KEY) + '&autoload=false'
+      );
+    } catch (error) {
+      console.error('카카오 지도 SDK를 불러오지 못했습니다.', error);
+      container.innerHTML =
+        '<p style="display:flex;align-items:center;justify-content:center;height:100%;color:#777;font-size:0.85rem;">지도를 불러오지 못했습니다. 아래 길찾기 버튼을 이용해 주세요.</p>';
+      return;
+    }
+
+    if (!window.kakao || !window.kakao.maps) {
+      console.error('카카오 지도 SDK가 로드되었지만 maps API를 찾을 수 없습니다.');
+      container.innerHTML =
+        '<p style="display:flex;align-items:center;justify-content:center;height:100%;color:#777;font-size:0.85rem;">지도를 불러오지 못했습니다. 아래 길찾기 버튼을 이용해 주세요.</p>';
+      return;
+    }
+
+    window.kakao.maps.load(function () {
       const options = {
-        center: new kakao.maps.LatLng(VENUE_LAT, VENUE_LNG),
+        center: new window.kakao.maps.LatLng(VENUE_LAT, VENUE_LNG),
         level: 4,
       };
-      const map = new kakao.maps.Map(container, options);
+      const map = new window.kakao.maps.Map(container, options);
 
       // 마커 표시
-      const marker = new kakao.maps.Marker({
-        position: new kakao.maps.LatLng(VENUE_LAT, VENUE_LNG),
+      const marker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(VENUE_LAT, VENUE_LNG),
       });
       marker.setMap(map);
 
       // 인포윈도우 (장소명)
-      const infowindow = new kakao.maps.InfoWindow({
+      const infowindow = new window.kakao.maps.InfoWindow({
         content: '<div style="padding:4px 8px;font-size:0.8rem;white-space:nowrap;">' + VENUE_NAME + '</div>',
       });
       infowindow.open(map, marker);
