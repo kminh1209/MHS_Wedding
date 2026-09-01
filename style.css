@@ -926,11 +926,10 @@ body::before {
 .copy-btn.is-copied                { border-color: #5C9F5F; }
 
 /* ==========================================================
-   8. RSVP / 9. GUESTBOOK / 10. SHARE
+   9. GUESTBOOK / 10. SHARE
    ========================================================== */
-.rsvp, .guestbook, .share { background: var(--color-bg); }
+.guestbook, .share { background: var(--color-bg); }
 
-.rsvp-message,
 .guestbook-message,
 .share-message {
   font-size: 14.5px;
@@ -938,6 +937,132 @@ body::before {
   line-height: 2.0;
   margin-bottom: 28px;
 }
+
+.guestbook-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+  margin: 0 auto 28px;
+}
+.guestbook-form-row {
+  display: flex;
+  gap: 8px;
+}
+.guestbook-input,
+.guestbook-textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+.guestbook-input:focus,
+.guestbook-textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.guestbook-input-password { max-width: 130px; }
+.guestbook-textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.6;
+}
+.guestbook-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.guestbook-counter {
+  font-size: 11px;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+}
+.guestbook-submit { flex-shrink: 0; }
+
+.guestbook-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.guestbook-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-muted);
+  padding: 20px 0;
+}
+.guestbook-item {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 10px rgba(83, 66, 57, 0.08);
+  text-align: left;
+}
+.guestbook-item-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.guestbook-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.guestbook-item-date {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+.guestbook-item-message {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0 0 8px;
+}
+.guestbook-item-delete {
+  font-size: 11px;
+  color: var(--color-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.guestbook-item-delete:hover { color: var(--color-text); }
+
+.guestbook-delete-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.guestbook-delete-input {
+  flex: 1;
+  font-size: 12.5px;
+  padding: 6px 10px;
+}
+.guestbook-delete-confirm {
+  flex-shrink: 0;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.guestbook-delete-confirm:hover { background: var(--color-bg); }
 
 .share-actions {
   display: flex;
@@ -1436,7 +1561,6 @@ a { color: var(--color-text); }
 .greeting-body,
 .gallery-message,
 .account-message,
-.rsvp-message,
 .guestbook-message,
 .share-message {
   max-width: 310px;

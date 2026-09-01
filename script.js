@@ -10,8 +10,17 @@
   // PLACEHOLDERS — 실제 운영 시 아래 값을 채워주세요.
   // ---------------------------------------------------------
   const KAKAO_JS_KEY     = '3a2cd201a0c4a64bdcd53e3839fe8c94';
-  const RSVP_FORM_URL    = ''; // placeholder: Tally / Google Form / FormSubmit URL
-  const GUESTBOOK_URL    = ''; // placeholder: 외부 방명록 폼 URL
+  // placeholder: Firebase 콘솔 > 프로젝트 설정 > 일반 > 내 앱 에서 발급받은 구성값을 채워주세요.
+  // 자세한 절차는 README.md의 "방명록(Firebase) 설정" 항목을 참고하세요.
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAYYT4HCNsS75UoCfArUxl8KQag01ZE54A",
+    authDomain: "mhs-wedding.firebaseapp.com",
+    projectId: "mhs-wedding",
+    storageBucket: "mhs-wedding.firebasestorage.app",
+    messagingSenderId: "855666657852",
+    appId: "1:855666657852:web:055c5e0cd8e4c3e2789139",
+    measurementId: "G-LLMDL2WZDV"
+  };
   const SHARE_TITLE      = '강민혁 ♡ 김혜수 결혼합니다';
   const SHARE_DESC       = '2027년 2월 20일 토요일 오후 12시 30분\n용인 페이지웨딩 클래식홀 6F';
   const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/og-thumbnail.png';
@@ -571,33 +580,190 @@
   }
 
   // ---------------------------------------------------------
-  // 12. RSVP / Guestbook placeholder URL handling
+  // 12. Guestbook (Firebase Firestore)
   // ---------------------------------------------------------
-  function setupExternalLinks() {
-    const rsvp = $('#rsvp-link');
-    const gb   = $('#guestbook-link');
-    if (rsvp) {
-      if (RSVP_FORM_URL) {
-        rsvp.href = RSVP_FORM_URL;
-        rsvp.removeAttribute('data-placeholder-url');
-      } else {
-        rsvp.addEventListener('click', (e) => {
-          e.preventDefault();
-          showToast('참석 의사 폼은 준비 중입니다');
-        });
-      }
+  // 저장 필드: name(20자), message(200자), passwordHash(SHA-256 hex), createdAt(서버 타임스탬프)
+  // 삭제 비밀번호는 평문 저장하지 않고 SHA-256 해시로 비교합니다.
+  // 단, 클라이언트 단 해시 비교는 완전한 보안 수단이 아니므로(콘솔 접근자는 원문 없이도 삭제 가능)
+  // 참고용 잠금 장치로만 사용하세요. 자세한 내용은 README.md 참고.
+  const FIREBASE_SDK_VERSION = '10.14.1';
+
+  async function sha256Hex(text) {
+    const buf = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function formatGuestbookDate(date) {
+    if (!date) return '';
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+  }
+
+  function renderGuestbookEntries(list, entries, onDeleteSubmit) {
+    const empty = $('#guestbook-empty');
+    list.querySelectorAll('.guestbook-item').forEach((el) => el.remove());
+    if (!entries.length) {
+      if (empty) empty.hidden = false;
+      return;
     }
-    if (gb) {
-      if (GUESTBOOK_URL) {
-        gb.href = GUESTBOOK_URL;
-        gb.removeAttribute('data-placeholder-url');
-      } else {
-        gb.addEventListener('click', (e) => {
-          e.preventDefault();
-          showToast('방명록은 준비 중입니다');
-        });
-      }
+    if (empty) empty.hidden = true;
+    entries.forEach((entry) => {
+      const li = document.createElement('li');
+      li.className = 'guestbook-item';
+      li.dataset.id = entry.id;
+
+      const header = document.createElement('div');
+      header.className = 'guestbook-item-header';
+      const name = document.createElement('span');
+      name.className = 'guestbook-item-name';
+      name.textContent = entry.name;
+      const date = document.createElement('span');
+      date.className = 'guestbook-item-date';
+      date.textContent = formatGuestbookDate(entry.createdAt);
+      header.append(name, date);
+
+      const msg = document.createElement('p');
+      msg.className = 'guestbook-item-message';
+      msg.textContent = entry.message;
+
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'guestbook-item-delete';
+      delBtn.textContent = '삭제';
+
+      const delForm = document.createElement('form');
+      delForm.className = 'guestbook-delete-form';
+      delForm.hidden = true;
+      const delInput = document.createElement('input');
+      delInput.type = 'password';
+      delInput.placeholder = '삭제 비밀번호';
+      delInput.className = 'guestbook-input guestbook-delete-input';
+      delInput.maxLength = 20;
+      delInput.autocomplete = 'off';
+      const delSubmit = document.createElement('button');
+      delSubmit.type = 'submit';
+      delSubmit.className = 'guestbook-delete-confirm';
+      delSubmit.textContent = '확인';
+      delForm.append(delInput, delSubmit);
+
+      delBtn.addEventListener('click', () => {
+        delForm.hidden = !delForm.hidden;
+        if (!delForm.hidden) delInput.focus();
+      });
+      delForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        delSubmit.disabled = true;
+        await onDeleteSubmit(entry, delInput.value);
+        delSubmit.disabled = false;
+      });
+
+      li.append(header, msg, delBtn, delForm);
+      list.appendChild(li);
+    });
+  }
+
+  async function setupGuestbook() {
+    const form      = $('#guestbook-form');
+    const list      = $('#guestbook-list');
+    const nameEl    = $('#guestbook-name');
+    const pwEl      = $('#guestbook-password');
+    const msgEl     = $('#guestbook-message');
+    const counterEl = $('#guestbook-counter');
+    const submitBtn = $('#guestbook-submit');
+    if (!form || !list) return;
+
+    msgEl?.addEventListener('input', () => {
+      if (counterEl) counterEl.textContent = `${msgEl.value.length}/200`;
+    });
+
+    if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) {
+      list.innerHTML = '<li class="guestbook-empty">방명록 서비스 설정 중입니다. 잠시 후 다시 확인해 주세요.</li>';
+      if (submitBtn) submitBtn.disabled = true;
+      return;
     }
+
+    let db, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, limit, getFirestore;
+    try {
+      const [{ initializeApp }, firestoreMod] = await Promise.all([
+        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-app.js`),
+        import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-firestore.js`),
+      ]);
+      ({ collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, limit, getFirestore } = firestoreMod);
+      const app = initializeApp(FIREBASE_CONFIG);
+      db = getFirestore(app);
+    } catch (error) {
+      console.error('방명록 서비스를 불러오지 못했습니다.', error);
+      list.innerHTML = '<li class="guestbook-empty">방명록을 불러오지 못했습니다. 잠시 후 새로고침 해주세요.</li>';
+      return;
+    }
+
+    const guestbookQuery = query(collection(db, 'guestbook'), orderBy('createdAt', 'desc'), limit(100));
+
+    onSnapshot(guestbookQuery, (snapshot) => {
+      const entries = snapshot.docs.map((d) => {
+        const data = d.data();
+        return {
+          id: d.id,
+          name: data.name || '',
+          message: data.message || '',
+          passwordHash: data.passwordHash || '',
+          createdAt: data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : null,
+        };
+      });
+      renderGuestbookEntries(list, entries, async (entry, pw) => {
+        if (!pw) {
+          showToast('삭제 비밀번호를 입력해 주세요');
+          return;
+        }
+        try {
+          const hash = await sha256Hex(pw);
+          if (hash !== entry.passwordHash) {
+            showToast('비밀번호가 일치하지 않습니다');
+            return;
+          }
+          await deleteDoc(doc(db, 'guestbook', entry.id));
+          haptic(15);
+          showToast('메시지가 삭제되었습니다');
+        } catch (error) {
+          console.error(error);
+          showToast('삭제에 실패했습니다');
+        }
+      });
+    }, (error) => {
+      console.error('방명록을 불러오지 못했습니다.', error);
+      list.innerHTML = '<li class="guestbook-empty">방명록을 불러오지 못했습니다. 잠시 후 새로고침 해주세요.</li>';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = nameEl?.value.trim() || '';
+      const password = pwEl?.value || '';
+      const message = msgEl?.value.trim() || '';
+      if (!name || !password || !message) {
+        showToast('이름, 메시지, 삭제 비밀번호를 모두 입력해 주세요');
+        return;
+      }
+      if (submitBtn) submitBtn.disabled = true;
+      try {
+        const passwordHash = await sha256Hex(password);
+        await addDoc(collection(db, 'guestbook'), {
+          name: name.slice(0, 20),
+          message: message.slice(0, 200),
+          passwordHash,
+          createdAt: serverTimestamp(),
+        });
+        form.reset();
+        if (counterEl) counterEl.textContent = '0/200';
+        haptic(15);
+        showToast('방명록에 메시지가 등록되었습니다');
+      } catch (error) {
+        console.error(error);
+        showToast('등록에 실패했습니다. 다시 시도해 주세요');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
   }
 
   // ---------------------------------------------------------
@@ -614,7 +780,7 @@
     setupCopy();
     setupMusic();
     setupShare();
-    setupExternalLinks();
+    setupGuestbook();
 
     // reduced-motion 변경 시 단순 reload (모션 일관성 보장)
     if (reducedMotion.addEventListener) {
