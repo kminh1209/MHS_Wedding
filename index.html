@@ -213,7 +213,7 @@
       </div>
 
       <div class="venue-actions">
-        <a class="btn" href="https://map.kakao.com/?q=%EC%9A%A9%EC%9D%B8%20%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9B%A8%EB%94%A9" target="_blank" rel="noopener">카카오맵</a>
+        <a class="btn" href="https://map.kakao.com/link/to/%EC%9A%A9%EC%9D%B8%20%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9B%A8%EB%94%A9,37.2399,127.1967" target="_blank" rel="noopener">카카오맵 길찾기</a>
         <a class="btn" href="https://map.naver.com/v5/search/%EC%9A%A9%EC%9D%B8%20%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9B%A8%EB%94%A9" target="_blank" rel="noopener">네이버지도</a>
         <a class="btn" href="https://www.tmap.co.kr/tmap2/mobile/route.jsp?name=%EC%9A%A9%EC%9D%B8%20%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9B%A8%EB%94%A9" target="_blank" rel="noopener">Tmap</a>
       </div>
@@ -377,21 +377,6 @@
 
   <!-- 토스트 -->
   <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
-
-  <!-- 카카오 Maps SDK — script.js 의 KAKAO_JS_KEY 에 키를 입력하면 아래 스크립트가 동적으로 로드됩니다 -->
-  <script>
-    (function () {
-      // script.js 보다 먼저 실행되므로 여기서 키를 직접 입력하세요.
-      // 예) var KAKAO_JS_KEY = 'abc1234567890';
-      var KAKAO_JS_KEY = '3a2cd201a0c4a64bdcd53e3839fe8c94'; // ← 여기에 카카오 JavaScript 키 입력
-      if (KAKAO_JS_KEY) {
-        var s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + KAKAO_JS_KEY + '&autoload=false';
-        document.head.appendChild(s);
-      }
-    })();
-  </script>
 
   <script src="script.js"></script>
 </body>
