@@ -597,7 +597,12 @@
   function formatGuestbookDate(date) {
     if (!date) return '';
     const pad = (n) => String(n).padStart(2, '0');
-    return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+    let hours = date.getHours();
+    const ampm = hours < 12 ? 'am' : 'pm';
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+    const minutes = pad(date.getMinutes());
+    return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${hours}:${minutes}${ampm}`;
   }
 
   function renderGuestbookEntries(list, entries, onDeleteSubmit) {
@@ -618,19 +623,21 @@
       const name = document.createElement('span');
       name.className = 'guestbook-item-name';
       name.textContent = entry.name;
-      const date = document.createElement('span');
-      date.className = 'guestbook-item-date';
-      date.textContent = formatGuestbookDate(entry.createdAt);
-      header.append(name, date);
-
-      const msg = document.createElement('p');
-      msg.className = 'guestbook-item-message';
-      msg.textContent = entry.message;
 
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
       delBtn.className = 'guestbook-item-delete';
       delBtn.textContent = '삭제';
+
+      header.append(name, delBtn);
+
+      const msg = document.createElement('p');
+      msg.className = 'guestbook-item-message';
+      msg.textContent = entry.message;
+
+      const date = document.createElement('p');
+      date.className = 'guestbook-item-date';
+      date.textContent = formatGuestbookDate(entry.createdAt);
 
       const delForm = document.createElement('form');
       delForm.className = 'guestbook-delete-form';
@@ -658,7 +665,7 @@
         delSubmit.disabled = false;
       });
 
-      li.append(header, msg, delBtn, delForm);
+      li.append(header, msg, date, delForm);
       list.appendChild(li);
     });
   }

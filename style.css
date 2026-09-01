@@ -1019,17 +1019,18 @@ body::before {
   font-weight: 600;
   color: var(--color-text);
 }
-.guestbook-item-date {
-  font-size: 11px;
-  color: var(--color-muted);
-}
 .guestbook-item-message {
   font-size: 13.5px;
   line-height: 1.7;
   color: var(--color-text);
   white-space: pre-wrap;
   word-break: break-word;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+}
+.guestbook-item-date {
+  font-size: 11px;
+  color: var(--color-muted);
+  margin: 0;
 }
 .guestbook-item-delete {
   font-size: 11px;
@@ -1039,9 +1040,11 @@ body::before {
   padding: 0;
   cursor: pointer;
   text-decoration: underline;
+  flex-shrink: 0;
 }
 .guestbook-item-delete:hover { color: var(--color-text); }
 
+.guestbook-delete-form[hidden] { display: none; }
 .guestbook-delete-form {
   display: flex;
   gap: 6px;
