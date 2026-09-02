@@ -510,6 +510,19 @@
       requestAnimationFrame(tick);
     }
 
+    let userPaused = false;
+
+    async function startPlayback() {
+      try {
+        await audio.play();
+        btn.setAttribute('aria-pressed', 'true');
+        fadeVolume(0.4, 1500);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
     btn.addEventListener('click', async () => {
       btn.classList.remove('is-rippling');
       void btn.offsetWidth;
@@ -517,10 +530,11 @@
       haptic(10);
       try {
         if (audio.paused) {
-          await audio.play();
-          btn.setAttribute('aria-pressed', 'true');
-          fadeVolume(0.4, 1500);
+          userPaused = false;
+          const ok = await startPlayback();
+          if (!ok) throw new Error('play blocked');
         } else {
+          userPaused = true;
           fadeVolume(0, 600);
           btn.setAttribute('aria-pressed', 'false');
         }
@@ -528,6 +542,26 @@
         showToast('음원 파일을 찾을 수 없어요. (audio/bgm.mp3)');
       }
     });
+
+    // 페이지 접속 시 자동 재생 시도. 브라우저 자동재생 정책으로 차단되면
+    // 최초 사용자 상호작용(터치/클릭/스크롤/키입력) 시점에 재생한다.
+    (async () => {
+      const ok = await startPlayback();
+      if (!ok) {
+        const resumeOnInteraction = async () => {
+          if (userPaused) return;
+          const played = await startPlayback();
+          if (played) {
+            ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach((ev) =>
+              document.removeEventListener(ev, resumeOnInteraction)
+            );
+          }
+        };
+        ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach((ev) =>
+          document.addEventListener(ev, resumeOnInteraction, { passive: true, once: false })
+        );
+      }
+    })();
   }
 
   // ---------------------------------------------------------
