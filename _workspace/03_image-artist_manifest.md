@@ -13,9 +13,9 @@
 | 3 | floral-corner.png | 좌상단 모서리 장식 | calendar / account / rsvp 카드 코너 | 1024×1024 | 1:1 | "좌상단 모서리 보태니컬 장식" | 성공 |
 | 4 | gallery-placeholder-1.png | 갤러리 1번 placeholder (오프센터 부케) | gallery slot 1 | 1024×1280 | 4:5 | "더스티 로즈와 세이지 부케 워터컬러 — 갤러리 1" | 성공 |
 | 5 | gallery-placeholder-2.png | 갤러리 2번 placeholder (수직 유칼립투스) | gallery slot 2 | 1024×1280 | 4:5 | "유칼립투스 줄기와 장미 봉오리 워터컬러 — 갤러리 2" | 성공 |
-| 6 | gallery-placeholder-3.png | 갤러리 3번 placeholder (떠다니는 꽃잎) | gallery slot 3 | 1024×1280 | 4:5 | "흩날리는 장미 꽃잎 워터컬러 — 갤러리 3" | 성공 |
-| 7 | gallery-placeholder-4.png | 갤러리 4번 placeholder (하단 군집) | gallery slot 4 | 1024×1280 | 4:5 | "하단 보태니컬 군집 워터컬러 — 갤러리 4" | 성공 |
-| 8 | gallery-placeholder-5.png | 갤러리 5번 placeholder (오픈 리스) | gallery slot 5 (풍경) | 1024×1280 | 4:5 | "원형 보태니컬 리스 워터컬러 — 갤러리 5" | 성공 |
+| 6 | photo-02.png | 갤러리 사진 (떠다니는 꽃잎 placeholder) | gallery | 1024×1280 | 4:5 | "흩날리는 장미 꽃잎 워터컬러 — 갤러리" | 성공 |
+| 7 | photo-03.png | 갤러리 사진 (하단 군집 placeholder) | gallery | 1024×1280 | 4:5 | "하단 보태니컬 군집 워터컬러 — 갤러리" | 성공 |
+| 8 | photo-04.png | 갤러리 사진 (오픈 리스 placeholder) | gallery | 1024×1280 | 4:5 | "원형 보태니컬 리스 워터컬러 — 갤러리" | 성공 |
 | 9 | og-thumbnail.png | 카카오톡/SNS 공유 썸네일 (og:image) | `<head>` og:image / 카카오 공유 | 1536×800 | 약 1.92:1 | "더스티 로즈 & 세이지 보태니컬 프레임 청첩장 공유 카드" | 성공 |
 
 > 비고: gpt-image-2의 사이즈 제약(16의 배수, 한 변 종횡비 3:1 이내)에 맞추기 위해 floral-divider는 16:5 대신 3:1 (1536×512), og-thumbnail은 1.91:1 대신 1.92:1 (1536×800)으로 조정.
@@ -67,27 +67,27 @@
 - prompt: |
     A 4:5 vertical placeholder illustration for a wedding photo gallery slot. Soft watercolor still life composition #2: a single tall stem of sage green eucalyptus (#A8B59C) rising from the bottom-center with two or three small dusty rose buds (#C9A2A2) attached at varying heights, the tallest bud touched with deep rosewood (#8B5A5A) at its core. Generous negative space surrounding. Warm ivory cream background (#FAF6F1). Same illustration style as the hero image: soft watercolor, muted dusty rose and sage palette, hand-painted texture with paper grain, minimal thin line accents, no text, no figures. Elegant, calm, refined, vertical airy composition, high resolution.
 
-## 6. gallery-placeholder-3
+## 6. photo-02
 
-- file: images/gallery-placeholder-3.png
+- file: gallery/photo-02.png
 - size: 1024×1280 (4:5)
 - alt: "흩날리는 장미 꽃잎 워터컬러 — 갤러리 3"
 - usage: gallery 3번 슬롯. 떠다니는 꽃잎 추상으로 다이내믹.
 - prompt: |
     A 4:5 vertical placeholder illustration for a wedding photo gallery slot. Soft watercolor abstract composition #3: scattered loose petals of dusty rose (#C9A2A2) and small sage green leaf clusters (#A8B59C) drifting diagonally from the upper-right toward the lower-left, as if floating gently. A few accent strokes of deep rosewood (#8B5A5A) at petal cores. Generous airy negative space throughout. Warm ivory cream background (#FAF6F1). Same illustration style as the hero image: soft watercolor, muted dusty rose and sage palette, hand-painted texture with paper grain, minimal thin line accents, no text, no figures. Elegant, dreamy, calm, refined, high resolution.
 
-## 7. gallery-placeholder-4
+## 7. photo-03
 
-- file: images/gallery-placeholder-4.png
+- file: gallery/photo-03.png
 - size: 1024×1280 (4:5)
 - alt: "하단 보태니컬 군집 워터컬러 — 갤러리 4"
 - usage: gallery 4번 슬롯. 하단 군집 + 상단 여백으로 세 번째 변주.
 - prompt: |
     A 4:5 vertical placeholder illustration for a wedding photo gallery slot. Soft watercolor still life composition #4: a horizontal cluster of small dusty rose buds (#C9A2A2) with deep rosewood (#8B5A5A) accents nestled among trailing sage green eucalyptus and small ferns (#A8B59C), arranged across the lower third of the frame as if resting on an unseen surface. Generous open sky-like negative space in the upper two thirds. Warm ivory cream background (#FAF6F1). Same illustration style as the hero image: soft watercolor, muted dusty rose and sage palette, hand-painted texture with paper grain, minimal thin line accents, no text, no figures. Elegant, calm, refined, grounded composition, high resolution.
 
-## 8. gallery-placeholder-5
+## 8. photo-04
 
-- file: images/gallery-placeholder-5.png
+- file: gallery/photo-04.png
 - size: 1024×1280 (4:5)
 - alt: "원형 보태니컬 리스 워터컬러 — 갤러리 5"
 - usage: gallery 5번 슬롯 (풍경 자리). 대칭 리스 구도로 마무리감.

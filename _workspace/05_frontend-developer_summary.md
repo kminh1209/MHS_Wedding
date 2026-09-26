@@ -18,7 +18,7 @@ wedding-invitation-letter/
 │   ├── hero-illustration.png
 │   ├── floral-divider.png
 │   ├── floral-corner.png
-│   ├── gallery-placeholder-1.png ~ 5.png
+│ ├── gallery/ (Main Image.png, photo-01~04.png, photos.json)
 │   └── og-thumbnail.png
 └── _workspace/
     └── 05_frontend-developer_summary.md  (이 파일)

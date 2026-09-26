@@ -241,6 +241,61 @@
   // 6. Gallery: swipe + nav + dots + auto-play (motion §3-2)
   // ---------------------------------------------------------
   let galleryAPI = null;
+  async function loadGalleryImages() {
+    const track = $('#gallery-track');
+    const dots = $('#gallery-dots');
+    if (!track || !dots) return;
+
+    const response = await fetch('gallery/photos.json');
+    if (!response.ok) {
+      throw new Error(`갤러리 목록을 불러오지 못했습니다: ${response.status}`);
+    }
+
+    const manifest = await response.json();
+    const isImageFilename = (filename) =>
+      typeof filename === 'string' &&
+      filename.length > 0 &&
+      !filename.includes('/') &&
+      !filename.includes('\\') &&
+      /\.(avif|gif|jpe?g|png|webp)$/i.test(filename);
+
+    if (!manifest || !isImageFilename(manifest.mainImage) || !Array.isArray(manifest.images)) {
+      throw new Error('gallery/photos.json의 mainImage 또는 images 형식이 올바르지 않습니다.');
+    }
+
+    const photos = manifest.images.filter((filename) => isImageFilename(filename) && filename !== manifest.mainImage);
+    if (photos.length !== manifest.images.length) {
+      throw new Error('gallery/photos.json에 지원하지 않는 이미지 파일명 또는 중복된 Main Image가 있습니다.');
+    }
+
+    for (let i = photos.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [photos[i], photos[j]] = [photos[j], photos[i]];
+    }
+
+    const filenames = [manifest.mainImage, ...photos];
+    track.replaceChildren();
+    dots.replaceChildren();
+    filenames.forEach((filename, index) => {
+      const slide = document.createElement('li');
+      slide.className = 'gallery-slide';
+      slide.setAttribute('aria-label', `사진 ${index + 1} / ${filenames.length}`);
+
+      const image = document.createElement('img');
+      image.src = `gallery/${encodeURIComponent(filename)}`;
+      image.alt = index === 0 ? '메인 웨딩 사진' : `웨딩 사진 ${index + 1}`;
+      image.loading = index === 0 ? 'eager' : 'lazy';
+      image.addEventListener('error', () => {
+        console.error(`갤러리 사진을 불러오지 못했습니다: gallery/${filename}`);
+        showToast('갤러리 사진을 불러오지 못했습니다');
+      }, { once: true });
+      slide.append(image);
+      track.append(slide);
+
+      dots.append(document.createElement('li'));
+    });
+  }
+
   function setupGallery() {
     const stage = $('.gallery-stage');
     const track = $('#gallery-track');
@@ -250,6 +305,12 @@
     const prev   = $('.gallery-prev');
     const next   = $('.gallery-next');
     const N = slides.length;
+    if (!N) {
+      stage.hidden = true;
+      const dotsContainer = $('#gallery-dots');
+      if (dotsContainer) dotsContainer.hidden = true;
+      return;
+    }
     let idx = 0;
     let dragX = 0;
     let dragStartX = 0;
@@ -262,6 +323,10 @@
       dots.forEach((d, k) => d.classList.toggle('active', k === idx));
       slides.forEach((s, k) => {
         s.setAttribute('aria-hidden', k === idx ? 'false' : 'true');
+        if (k === idx) {
+          const image = $('img', s);
+          if (image) image.loading = 'eager';
+        }
       });
     }
     // Touch events
@@ -810,12 +875,20 @@
   // ---------------------------------------------------------
   // INIT
   // ---------------------------------------------------------
-  function init() {
+  async function init() {
     setupHero();
-    setupReveal();
     setupPetals();
     setupCalendar();
     setupVenueMap();
+
+    try {
+      await loadGalleryImages();
+    } catch (error) {
+      console.error('갤러리 사진을 불러오지 못했습니다.', error);
+      showToast('갤러리 사진을 불러오지 못했습니다');
+    }
+
+    setupReveal();
     setupGallery();
     setupLightbox();
     setupCopy();

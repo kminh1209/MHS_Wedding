@@ -34,6 +34,12 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
+### 갤러리 사진 추가
+
+사진 파일을 `gallery/` 폴더에 넣고 `gallery/photos.json`의 `images` 배열에 파일명을 추가하세요. `mainImage`에 지정한 파일은 항상 첫 번째로 표시되며, 나머지 사진은 페이지에 접속할 때마다 순서가 섞입니다. JPG, PNG, WebP, GIF, AVIF 이미지를 사용할 수 있습니다.
+
+정적 호스팅에서는 브라우저가 폴더 안의 파일 목록을 자동으로 읽을 수 없어, 새 사진을 추가할 때 JSON 목록도 함께 수정해야 합니다.
+
 ### 3. 배포
 
 - **GitHub Pages**: Settings → Pages → Source `main` / `/ (root)`
@@ -106,8 +112,11 @@ wedding-letter/
 │   ├── hero-illustration.png
 │   ├── floral-divider.png
 │   ├── floral-corner.png
-│   ├── gallery-placeholder-1~5.png
 │   └── og-thumbnail.png
+├── gallery/                 # 갤러리 사진 및 목록
+│   ├── MainImage.jpg        # 현재 mainImage, 항상 첫 번째로 표시
+│   ├── KakaoTalk_*.jpg
+│   └── photos.json          # 나머지 사진 목록
 ├── _workspace/              # 중간 산출물 (재실행용으로 보존)
 │   ├── 01_concept-director_concept-sheet.md
 │   ├── 02_copy-writer_copy.md
