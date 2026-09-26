@@ -28,7 +28,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" as="style" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260927">
 </head>
 <body>
   <!-- 배경 모션: 꽃잎 파티클 캔버스 (prefers-reduced-motion에서는 숨김) -->
@@ -54,20 +54,21 @@
 
   <main class="card" id="card">
 
-    <!-- 1. HERO -->
+    <!-- 1. OPENING -->
+    <section class="opening" id="opening" aria-label="청첩장 시작">
+      <p class="opening-message" id="opening-message" data-message="저희의&#10;결혼식에&#10;초대합니다" aria-label="저희의 결혼식에 초대합니다"></p>
+      <div class="opening-scroll" aria-hidden="true">
+        <span>SCROLL TO OPEN</span>
+        <i></i>
+      </div>
+    </section>
+
+    <!-- 2. HERO -->
     <section class="hero" id="hero" aria-label="청첩장 메인">
       <div class="hero-frame">
-        <div class="hero-illustration" aria-hidden="true">
-          <div class="hero-doodles-top">
-            <span>✦</span><span>•</span><span>✧</span>
-            <span>HAPPY</span>
-            <span>✧</span><span>•</span><span>✦</span>
-          </div>
-          <p class="hero-title" data-hero-step="1">WEDDING</p>
-         <img src="images/hero-couple2.png" alt="신랑 신부 일러스트" class="hero-sketch">
-        </div>
+        <img src="gallery/MainImage.jpg" alt="강민혁과 김혜수의 웨딩 사진" class="hero-photo">
         <div class="hero-content">
-          <p class="hero-eyebrow script" data-hero-step="1">Happy ever after</p>
+          <p class="hero-eyebrow script" data-hero-step="1">Wedding day</p>
           <p class="hero-savedate en" data-hero-step="2">SAVE THE DATE<br><time class="hero-savedate-num" datetime="2027-02-20">February 20, 2027</time></p>
           <h1 class="hero-names" aria-label="강민혁 Minhyeok and 김혜수 Hyesu">
             <span class="hero-name-ko" data-hero-step="3">강민혁</span>

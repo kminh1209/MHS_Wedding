@@ -63,8 +63,32 @@
   }
 
   // ---------------------------------------------------------
-  // 1. HERO entrance step-in
+  // 1. Opening typewriter + hero entrance
   // ---------------------------------------------------------
+  function setupOpening() {
+    const message = $('#opening-message');
+    if (!message) return;
+
+    const text = message.dataset.message || '';
+    if (isReduced()) {
+      message.textContent = text;
+      message.classList.add('is-complete');
+      return;
+    }
+
+    let index = 0;
+    function typeNextCharacter() {
+      message.textContent = text.slice(0, index);
+      index += 1;
+      if (index <= text.length) {
+        setTimeout(typeNextCharacter, text[index - 1] === '\n' ? 380 : 130);
+      } else {
+        message.classList.add('is-complete');
+      }
+    }
+    typeNextCharacter();
+  }
+
   function setupHero() {
     const hero = $('.hero');
     if (!hero) return;
@@ -876,6 +900,7 @@
   // INIT
   // ---------------------------------------------------------
   async function init() {
+    setupOpening();
     setupHero();
     setupPetals();
     setupCalendar();
