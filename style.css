@@ -1686,15 +1686,15 @@ a { color: var(--color-text); }
 
 .gallery-slide img,
 .lightbox-img {
-  filter: grayscale(1) contrast(1.05) brightness(1.05);
+  filter: none;
 }
 
 .gallery-slide.first-reveal img {
-  filter: grayscale(1) contrast(1.05) brightness(1.05) blur(4px);
+  filter: blur(4px);
 }
 
 .reveal.is-visible .gallery-slide.first-reveal img {
-  filter: grayscale(1) contrast(1.05) brightness(1.05) blur(0);
+  filter: blur(0);
 }
 
 .gallery-nav {
