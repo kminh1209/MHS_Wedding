@@ -67,12 +67,33 @@
   // ---------------------------------------------------------
   function setupOpening() {
     const message = $('#opening-message');
-    if (!message) return;
+    const hero = $('#hero');
+    if (!message || !hero) return;
 
     const text = message.dataset.message || '';
+    function moveToHero() {
+      setTimeout(() => {
+        if (isReduced()) {
+          hero.scrollIntoView({ behavior: 'auto', block: 'start' });
+          return;
+        }
+
+        const opening = $('#opening');
+        if (!opening) return;
+        opening.classList.add('is-wipe-ready');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => opening.classList.add('is-wiping'));
+        });
+        opening.addEventListener('animationend', () => {
+          opening.hidden = true;
+        }, { once: true });
+      }, 1000);
+    }
+
     if (isReduced()) {
       message.textContent = text;
       message.classList.add('is-complete');
+      moveToHero();
       return;
     }
 
@@ -84,6 +105,7 @@
         setTimeout(typeNextCharacter, text[index - 1] === '\n' ? 380 : 130);
       } else {
         message.classList.add('is-complete');
+        moveToHero();
       }
     }
     typeNextCharacter();
@@ -585,7 +607,7 @@
     const btn = $('#music-toggle');
     const audio = $('#bgm');
     if (!btn || !audio) return;
-    audio.volume = 0;
+    audio.volume = 0.4;
 
     function fadeVolume(target, dur) {
       const start = audio.volume;
@@ -603,9 +625,9 @@
 
     async function startPlayback() {
       try {
+        audio.volume = 0.4;
         await audio.play();
         btn.setAttribute('aria-pressed', 'true');
-        fadeVolume(0.4, 1500);
         return true;
       } catch (e) {
         return false;
@@ -902,6 +924,7 @@
   async function init() {
     setupOpening();
     setupHero();
+    setupMusic();
     setupPetals();
     setupCalendar();
     setupVenueMap();
@@ -917,7 +940,6 @@
     setupGallery();
     setupLightbox();
     setupCopy();
-    setupMusic();
     setupShare();
     setupGuestbook();
 

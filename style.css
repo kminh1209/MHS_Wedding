@@ -1392,6 +1392,26 @@ a { color: var(--color-text); }
   background: #f7fbf4;
 }
 
+.opening.is-wipe-ready {
+  position: fixed;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  z-index: 10;
+  width: min(100%, var(--max-w));
+  height: 100svh;
+  transform: translateX(-50%);
+}
+
+.opening.is-wiping {
+  animation: openingWipe 1050ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes openingWipe {
+  to { clip-path: inset(100% 0 0 0); }
+}
+
 .opening-message {
   min-height: 5.2em;
   color: #719154;
