@@ -230,8 +230,8 @@
   // ---------------------------------------------------------
   // 5. Venue map: Kakao Maps SDK
   // ---------------------------------------------------------
-  const VENUE_LAT = 37.2399;   // 용인 페이지웨딩 위도
-  const VENUE_LNG = 127.1967;  // 용인 페이지웨딩 경도
+  const VENUE_LAT = 37.2453255;  // 경기 용인시 처인구 백옥대로 1238
+  const VENUE_LNG = 127.2132689; // 경기 용인시 처인구 백옥대로 1238
 
   async function setupVenueMap() {
     const container = document.getElementById('kakao-map');
